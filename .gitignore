@@ -1,0 +1,25 @@
+# Serverless directories
+.serverless
+
+# Intellij project files
+.idea
+
+# golang output binary directory
+bin
+
+# temporary files
+tmp
+
+# this is an auto-generated file produced by dep ensure
+Gopkg.lock
+
+# golang vendor (dependencies) directory
+vendor
+
+# please copy application.template.yml to application.yml as it will be your own application settings
+application.yml
+
+# please run client_config.go or bin/client/config to generate a config file for client
+gopher.yml
+
+

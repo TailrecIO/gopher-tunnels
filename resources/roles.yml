@@ -1,0 +1,116 @@
+Resources:
+  GopherRegisterLambdaRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: gopher-register-${self:provider.stage}-lambdaRole
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+        - Effect: Allow
+          Principal:
+            Service:
+            - lambda.amazonaws.com
+          Action: sts:AssumeRole
+      Policies:
+        - PolicyName: gopher-register-${self:provider.stage}-policy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - "logs:CreateLogGroup"
+                  - "logs:CreateLogStream"
+                  - "logs:PutLogEvents"
+                  - "logs:DescribeLogStreams"
+                Resource:
+                  - "arn:aws:logs:*:*:*"
+              - Effect: Allow
+                Action:
+                  - "dynamodb:PutItem"
+                Resource:
+                  - "arn:aws:dynamodb:${self:provider.region}:*:table/gopher_tunnels"
+              - Effect: Allow
+                Action:
+                  - "sqs:GetQueueUrl"
+                  - "sqs:CreateQueue"
+                Resource:
+                  -  "arn:aws:sqs:${self:provider.region}:*:gopher_*"
+
+  GopherWebhookLambdaRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: gopher-webhook-${self:provider.stage}-lambdaRole
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+        - Effect: Allow
+          Principal:
+            Service:
+            - lambda.amazonaws.com
+          Action: sts:AssumeRole
+      Policies:
+      - PolicyName: gopher-webhook-${self:provider.stage}-policy
+        PolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+          - Effect: Allow
+            Action:
+            - "logs:CreateLogGroup"
+            - "logs:CreateLogStream"
+            - "logs:PutLogEvents"
+            - "logs:DescribeLogStreams"
+            Resource:
+            - "arn:aws:logs:*:*:*"
+          - Effect: Allow
+            Action:
+            - "dynamodb:GetItem"
+            Resource:
+            - "arn:aws:dynamodb:${self:provider.region}:*:table/gopher_tunnels"
+          - Effect: Allow
+            Action:
+            - "sqs:GetQueueUrl"
+            - "sqs:SendMessage"
+            - "sqs:ReceiveMessage"
+            - "sqs:DeleteMessage"
+            - "sqs:CreateQueue"
+            Resource:
+            -  "arn:aws:sqs:${self:provider.region}:*:gopher_*"
+
+  GopherRespondLambdaRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: gopher-respond-${self:provider.stage}-lambdaRole
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+        - Effect: Allow
+          Principal:
+            Service:
+            - lambda.amazonaws.com
+          Action: sts:AssumeRole
+      Policies:
+      - PolicyName: gopher-respond-${self:provider.stage}-policy
+        PolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+          - Effect: Allow
+            Action:
+            - "logs:CreateLogGroup"
+            - "logs:CreateLogStream"
+            - "logs:PutLogEvents"
+            - "logs:DescribeLogStreams"
+            Resource:
+            - "arn:aws:logs:*:*:*"
+          - Effect: Allow
+            Action:
+            - "dynamodb:GetItem"
+            Resource:
+            - "arn:aws:dynamodb:${self:provider.region}:*:table/${self:custom.config.dynamoDbTable}"
+          - Effect: Allow
+            Action:
+            - "sqs:GetQueueUrl"
+            - "sqs:SendMessage"
+            - "sqs:DeleteMessage"
+            Resource:
+            -  "arn:aws:sqs:${self:provider.region}:*:gopher_*"
+

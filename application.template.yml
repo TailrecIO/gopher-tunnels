@@ -1,0 +1,25 @@
+
+dev:
+
+  ##### Common Configuration ####
+
+  # ACCOUNT_ID
+  accountId: ""
+  # REGION
+  region: "us-west-2"
+  # DYNAMO_DB_TABLE
+  dynamoDbTable: "gopher_tunnels"
+  # SQS Queue Type: fifo, standard
+  queueType: "fifo"
+
+  ##### Client Configuration #####
+  # This can be either API Gateway endpoint or the custom domain that you have associated with API Gateway
+  baseApiEndpoint: ""
+  # If you want to hide the account ID and region from the client, you can put the queue endpoint in DNS CNAME
+  baseQueueEndpoint: ""
+
+  # Communication mode: sync, async
+  mode: "sync"
+  targetHost: "localhost"
+  targetPort: 9000
+
