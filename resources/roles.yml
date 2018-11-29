@@ -28,7 +28,7 @@ Resources:
                 Action:
                   - "dynamodb:PutItem"
                 Resource:
-                  - "arn:aws:dynamodb:${self:provider.region}:*:table/gopher_tunnels"
+                  - "arn:aws:dynamodb:${self:provider.region}:*:table/${self:custom.config.dynamoDbTable}"
               - Effect: Allow
                 Action:
                   - "sqs:GetQueueUrl"
@@ -65,7 +65,7 @@ Resources:
             Action:
             - "dynamodb:GetItem"
             Resource:
-            - "arn:aws:dynamodb:${self:provider.region}:*:table/gopher_tunnels"
+            - "arn:aws:dynamodb:${self:provider.region}:*:table/${self:custom.config.dynamoDbTable}"
           - Effect: Allow
             Action:
             - "sqs:GetQueueUrl"
