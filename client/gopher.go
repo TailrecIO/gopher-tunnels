@@ -136,7 +136,7 @@ func listen(gopher *commons.Gopher) {
 		}
 		log.Printf("Received %v messages\n", len(requests))
 		for _, req := range requests {
-			executeRequest(gopher, req)
+			go executeRequest(gopher, req)
 		}
 	}
 }

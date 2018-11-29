@@ -11,21 +11,21 @@ import (
 type ClientFlags struct {
 	EnvironmentName string
 	ClientConfigFile string
+	AppConfigFile string
 }
 
 func readEnvironment(flags *ClientFlags) map[string]string {
 
-	const appConfigFile = "application.yml"
-
 	flag.StringVar(&flags.EnvironmentName, "env", "dev", "environment name")
-	flag.StringVar(&flags.ClientConfigFile, "dest", "gopher.yml", "destination of the client config file")
+	flag.StringVar(&flags.ClientConfigFile, "output", "gopher.yml", "destination of the client config file")
+	flag.StringVar(&flags.AppConfigFile, "input", "application.yml", "the application config file")
 	flag.Parse()
 	log.Printf("Generating a config file for env: `%v` at `%v", flags.EnvironmentName, flags.ClientConfigFile)
 
 	var	environments map[string]map[string]string
-	ymlData, err := ioutil.ReadFile(appConfigFile)
+	ymlData, err := ioutil.ReadFile(flags.AppConfigFile)
 	if err != nil {
-		log.Fatalf("Failed to read a file: `%v`", appConfigFile)
+		log.Fatalf("Failed to read a file: `%v`", flags.AppConfigFile)
 	}
 	err = yaml.Unmarshal(ymlData, &environments)
 	if err != nil {

@@ -7,6 +7,9 @@
 # golang output binary directory
 bin
 
+# distribution package for users
+dist
+
 # temporary files
 tmp
 
