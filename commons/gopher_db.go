@@ -10,8 +10,6 @@ import (
 	"sync"
 )
 
-var tableName = aws.String(config.GetAwsDynamoDbTable())
-
 var dbSessionMu sync.Mutex
 var dbSession *dynamodb.DynamoDB
 
@@ -50,7 +48,7 @@ func NewGopher(publicKey *string, mode string) (*Gopher, error) {
 		return nil, err
 	}
 	input := &dynamodb.PutItemInput{
-		TableName: tableName,
+		TableName: aws.String(config.GetAwsDynamoDbTable()),
 		Item:      item,
 	}
 	_, err = getDbSession().PutItem(input)
@@ -65,7 +63,7 @@ func GetGopher(id *string) (*Gopher, error) {
 		defer gopherMu.Unlock()
 		if gopherMap[*id] == nil {
 			input := &dynamodb.GetItemInput{
-				TableName: tableName,
+				TableName: aws.String(config.GetAwsDynamoDbTable()),
 				Key:       getTableKey(id),
 			}
 			out, err := getDbSession().GetItem(input)
@@ -82,7 +80,7 @@ func GetGopher(id *string) (*Gopher, error) {
 
 func KillGopher(id *string) error {
 	input := &dynamodb.DeleteItemInput{
-		TableName: tableName,
+		TableName: aws.String(config.GetAwsDynamoDbTable()),
 		Key:       getTableKey(id),
 	}
 	_, err := getDbSession().DeleteItem(input)

@@ -17,6 +17,10 @@ import (
 	"strings"
 )
 
+const (
+	LogFile = "./gopher.log"
+	DefaultConfigFile = "./gopher.yml"
+)
 
 func serviceEndpoint(path string) string {
 	return config.GetBaseApiEndpoint() + path
@@ -47,7 +51,7 @@ func register() (*commons.Gopher, error) {
 }
 
 func executeRequest(gopher *commons.Gopher, req *commons.WebhookRequest) {
-	fmt.Printf("Request: %v\n", *req)
+
 	var res *commons.WebhookResponse
 	if req.Context.Error != nil {
 		responseCtx := commons.WebhookResponseContext{
@@ -62,15 +66,15 @@ func executeRequest(gopher *commons.Gopher, req *commons.WebhookRequest) {
 	} else {
 		res = forwardRequest(req)
 	}
-	fmt.Printf("Response: %v\n", *res)
+
 	resp, err := resty.R().
 		SetBody(res).
 		Post(serviceEndpoint("/respond/" + *gopher.Id))
 	if err != nil {
-		fmt.Printf("Error: %v\n", err.Error())
+		log.Printf("Error: %v\n", err.Error())
 	} else {
 		if resp.RawResponse.StatusCode != 200 {
-			fmt.Printf("Error: %v\n", string(resp.Body()))
+			log.Printf("Error: %v\n", string(resp.Body()))
 		}
 	}
 }
@@ -89,10 +93,7 @@ func forwardRequest(req *commons.WebhookRequest) *commons.WebhookResponse {
 		RequestMessageId:     req.Context.MessageId,
 		RequestReceiptHandle: req.Context.ReceiptHandle,
 	}
-	fmt.Printf("Request: %v\n", req)
-	fmt.Printf("Method: %v\n", *req.Method)
-	fmt.Printf("Target URL: %v\n", targetUrl.String())
-	fmt.Printf("Body: %v\n", string(*req.Body))
+
 	proxyReq, err := http.NewRequest(*req.Method, targetUrl.String(), strings.NewReader(*req.Body))
 	if err != nil {
 		return commons.ErrorResponse(err, &responseCtx)
@@ -205,8 +206,8 @@ func createQueryStringFromMap(paramMap map[string]string) *string {
 func createUrlFromWebhookRequest(req *commons.WebhookRequest) *url.URL {
 	queryString := createQueryStringFromMap(req.QueryParams)
 	targetUrl := url.URL{
-		Scheme:   "http", // TODO: support HTTPS scheme
-		Host:     fmt.Sprintf("%v:%v", config.GetTargetHost(), config.GetTargetPort()),
+		Scheme: "http", // TODO: support HTTPS scheme
+		Host:   fmt.Sprintf("%v:%v", config.GetTargetHost(), config.GetTargetPort()),
 	}
 	if req.Path != nil {
 		targetUrl.Path = *req.Path
@@ -234,7 +235,29 @@ func parseSimpleQuery(encodedQuery *string) (map[string]string, error) {
 	return m, nil
 }
 
+func redirectLogToFile() {
+	f, err := os.OpenFile(LogFile, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0644)
+	if err != nil {
+		log.Fatalf("Failed to open a file: %v", err)
+	}
+	log.SetOutput(f)
+}
+
 func main() {
+	var banner = `
+	
+   ___            _                 _____                        _     
+  / _ \___  _ __ | |__   ___ _ __  /__   \_   _ _ __  _ __   ___| |___ 
+ / /_\/ _ \| '_ \| '_ \ / _ \ '__|   / /\/ | | | '_ \| '_ \ / _ \ / __|
+/ /_\\ (_) | |_) | | | |  __/ |     / /  | |_| | | | | | | |  __/ \__ \
+\____/\___/| .__/|_| |_|\___|_|     \/    \__,_|_| |_|_| |_|\___|_|___/
+           |_|                                                         
+	
+	`
+
+	redirectLogToFile()
+
+	os.Setenv(commons.AnonymousCredentials, "true")
 
 	setCommandLineOptions()
 
@@ -244,17 +267,21 @@ func main() {
 		// take the last one as a file argument when the number of args is odd
 		configFile = args[len(args)-1]
 	} else {
-		configFile = "gopher.yml"
+		configFile = DefaultConfigFile
 	}
 
 	loadConfiguration(configFile)
 
-		gopher, err := register()
+	gopher, err := register()
 	if err != nil {
 		log.Fatalf("Couldn't register the service due to %v", err.Error())
 	}
 
-	log.Printf("Gopher ID: %v\n", *gopher.Id)
+	fmt.Println(banner)
+	fmt.Printf("Gopher ID: %v\n", *gopher.Id)
+	whEndpoint := serviceEndpoint(fmt.Sprintf("/webhook/%v", *gopher.Id))
+	fmt.Printf("Webhook Endpoint: %v\n", whEndpoint)
+	fmt.Println("=====================================")
 
 	listen(gopher)
 

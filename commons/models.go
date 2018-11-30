@@ -4,6 +4,7 @@ import (
 	"encoding/hex"
 	"fmt"
 	"github.com/rs/xid"
+	"github.com/tailrecio/gopher-tunnels/config"
 )
 
 const (
@@ -95,7 +96,7 @@ type Gopher struct {
 
 func MakeQueueName(dir string) string {
 	guid := xid.New()
-	return fmt.Sprintf("gopher_%v_%v.fifo", guid.String(), dir)
+	return fmt.Sprintf("gopher_%v_%v_%v.fifo", config.GetStage(), guid.String(), dir)
 }
 
 func (g *Gopher) GetPublicKey() *[32]byte {

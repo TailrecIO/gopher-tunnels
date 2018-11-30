@@ -229,7 +229,7 @@ func sendMessage(queueUrl *string, message interface{}) (*sqs.SendMessageOutput,
 // 4) The lifespan of data is very short
 func CreateRequestQueue(gopher *Gopher) (*string, error) {
 	queueName := gopher.RequestQueueName
-	resource := fmt.Sprintf("arn:aws:sqs:%v:%v:%v", config.GetAwsRegion(), config.GetAwsAccount(), queueName)
+	resource := fmt.Sprintf("arn:aws:sqs:%v:%v:%v", config.GetAwsRegion(), config.GetAwsAccount(), *queueName)
 	policy := fmt.Sprintf(`
 {
   "Version": "2012-10-17",

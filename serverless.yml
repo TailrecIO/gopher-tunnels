@@ -14,7 +14,7 @@
 service: gopher-tunnels
 
 custom:
-  config: ${file(./application.yml):${self:provider.stage}}
+  config: ${file(./application.yml):${opt:stage, self:provider.stage}}
 # You can pin your service to only deploy with a specific Serverless version
 # Check out our docs for more details
 # frameworkVersion: "=X.X.X"
@@ -29,8 +29,9 @@ provider:
   region: us-west-2
 
   environment:
+    stage: ${opt:stage, self:provider.stage}
     accountId: ${self:custom.config.accountId}
-    region: ${self:custom.config.region}
+    region: ${opt:region, self:provider.region}
     dynamoDbTable: ${self:custom.config.dynamoDbTable}
 
 # you can add statements to the Lambda function's IAM Role here

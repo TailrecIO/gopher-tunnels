@@ -1,9 +1,10 @@
 package main
 
 import (
-	"github.com/tailrecio/gopher-tunnels/commons"
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
+	"github.com/tailrecio/gopher-tunnels/commons"
+	"strings"
 )
 
 var responseQueueName = commons.MakeQueueName("out")
@@ -23,9 +24,18 @@ var webhookHandler = func(req events.APIGatewayProxyRequest) (events.APIGatewayP
 	context := commons.WebhookRequestContext{
 		ResponseQueueName: &responseQueueName,
 	}
+
+	// s = "/webhook/{id}/path1/path2/"
+	// parts[0] = "" (an empty string)
+	// parts[1] = "webhook"
+	// parts[2] = "{id}"
+	// parts[3] = "path1/path2/" (the rest of path string without / prefix)
+	parts := strings.SplitN(req.Path, "/", 4)
+	proxyPath := "/" + parts[3]
+
 	whReq := commons.WebhookRequest{
 		Context:     &context,
-		Path:        &req.Path,
+		Path:        &proxyPath,
 		QueryParams: req.QueryStringParameters,
 		Method:      &req.HTTPMethod,
 		Headers:     req.Headers,

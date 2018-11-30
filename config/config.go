@@ -8,6 +8,7 @@ import (
 )
 
 const (
+	Stage = "stage"
 	AccountId = "accountId"
 	Region = "region"
 	DynamoDbTable = "dynamoDbTable"
@@ -19,6 +20,15 @@ const (
 	TargetPort = "targetPort"
 
 )
+
+var stage string
+func GetStage() string {
+	if stage == "" {
+		stage = os.Getenv(Stage)
+		log.Printf("env.Stage: %v\n", stage)
+	}
+	return stage
+}
 
 var awsAccount string
 func GetAwsAccount() string {

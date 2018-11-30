@@ -16,6 +16,9 @@ tmp
 # this is an auto-generated file produced by dep ensure
 Gopkg.lock
 
+*.zip
+*.log
+
 # golang vendor (dependencies) directory
 vendor
 

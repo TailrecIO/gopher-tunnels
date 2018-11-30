@@ -9,33 +9,36 @@ import (
 )
 
 type ClientFlags struct {
-	EnvironmentName string
+	StageName string
 	ClientConfigFile string
 	AppConfigFile string
 }
 
 func readEnvironment(flags *ClientFlags) map[string]string {
 
-	flag.StringVar(&flags.EnvironmentName, "env", "dev", "environment name")
+	flag.StringVar(&flags.StageName, "stage", "dev", "stage name")
 	flag.StringVar(&flags.ClientConfigFile, "output", "gopher.yml", "destination of the client config file")
 	flag.StringVar(&flags.AppConfigFile, "input", "application.yml", "the application config file")
 	flag.Parse()
-	log.Printf("Generating a config file for env: `%v` at `%v", flags.EnvironmentName, flags.ClientConfigFile)
+	log.Printf("Generating a config file for env: `%v` at `%v", flags.StageName, flags.ClientConfigFile)
 
-	var	environments map[string]map[string]string
+	var	stages map[string]map[string]string
 	ymlData, err := ioutil.ReadFile(flags.AppConfigFile)
 	if err != nil {
 		log.Fatalf("Failed to read a file: `%v`", flags.AppConfigFile)
 	}
-	err = yaml.Unmarshal(ymlData, &environments)
+	err = yaml.Unmarshal(ymlData, &stages)
 	if err != nil {
 		log.Fatalf("Failed to unmarshal YAML from a file due to `%v`", err.Error())
 	}
-	environment := environments[flags.EnvironmentName]
-	if environment == nil {
-		log.Fatalf("Environment: `%v` not found in the configuration file", flags.EnvironmentName)
+	stage := stages[flags.StageName]
+	if stage == nil {
+		log.Fatalf("Stage: `%v` not found in the configuration file", flags.StageName)
 	}
-	return environment
+
+	stage[config.Stage] = flags.StageName
+
+	return stage
 }
 
 func main() {
