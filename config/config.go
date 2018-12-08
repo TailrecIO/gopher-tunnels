@@ -11,6 +11,7 @@ const (
 	Stage = "stage"
 	AccountId = "accountId"
 	Region = "region"
+	QueueType = "queueType"
 	DynamoDbTable = "dynamoDbTable"
 	BaseQueueEndpoint = "baseQueueEndpoint"
 	BaseApiEndpoint = "baseApiEndpoint"
@@ -46,6 +47,15 @@ func GetAwsRegion() string {
 		log.Printf("env.Region: %v\n", awsRegion)
 	}
 	return awsRegion
+}
+
+var queueType string
+func GetQueueType() string {
+	if queueType == "" {
+		queueType = os.Getenv(QueueType)
+		log.Printf("env.QueueType: %v\n", queueType)
+	}
+	return queueType
 }
 
 var awsDynamoDbTable string

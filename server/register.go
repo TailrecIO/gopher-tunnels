@@ -2,9 +2,9 @@ package main
 
 import (
 	"encoding/json"
-	"github.com/tailrecio/gopher-tunnels/commons"
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
+	"github.com/tailrecio/gopher-tunnels/commons"
 )
 
 var registerHandler = func(req events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {

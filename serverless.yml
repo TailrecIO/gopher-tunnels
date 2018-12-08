@@ -25,13 +25,14 @@ provider:
   profile: developer
 
 # you can overwrite defaults here
-  stage: dev
-  region: us-west-2
+  stage: ${opt:stage, 'dev'}
+  region: ${opt:region, self:custom.config.region}
 
   environment:
-    stage: ${opt:stage, self:provider.stage}
+    stage: ${self:provider.stage}
     accountId: ${self:custom.config.accountId}
-    region: ${opt:region, self:provider.region}
+    region: ${self:provider.region}
+    queueType: ${self:custom.config.queueType}
     dynamoDbTable: ${self:custom.config.dynamoDbTable}
 
 # you can add statements to the Lambda function's IAM Role here

@@ -5,10 +5,15 @@ import (
 	"fmt"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/sqs"
+	"github.com/rs/xid"
 	"github.com/tailrecio/gopher-tunnels/config"
 	"log"
 	"sync"
 )
+
+// https://aws.amazon.com/sqs/faqs/#Limits_and_restrictions
+// Q. How many message queues can I create?
+// A. You can create any number of message queues.
 
 var keyPairMu sync.Mutex
 var keyPair *KeyPair
@@ -28,6 +33,15 @@ func GetKeyPair() *KeyPair {
 		}
 	}
 	return keyPair
+}
+
+func MakeQueueName(dir string) string {
+	guid := xid.New()
+	queueSuffix := ""
+	if config.GetQueueType() == QueueTypeFifo {
+		queueSuffix = ".fifo"
+	}
+	return fmt.Sprintf("gopher_%v_%v_%v%v", config.GetStage(), guid.String(), dir, queueSuffix)
 }
 
 func getQueueSession() *sqs.SQS {
@@ -215,7 +229,10 @@ func sendMessage(queueUrl *string, message interface{}) (*sqs.SendMessageOutput,
 	input := sqs.SendMessageInput{
 		QueueUrl:       queueUrl,
 		MessageBody:    aws.String(string(jsonBytes)),
-		MessageGroupId: aws.String("1"), // https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/using-messagegroupid-property.html
+	}
+	if config.GetQueueType() == QueueTypeFifo {
+		// https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/using-messagegroupid-property.html
+		input.MessageGroupId = aws.String("1")
 	}
 	return getQueueSession().SendMessage(&input)
 }
@@ -259,8 +276,10 @@ func CreateResponseQueue() (*string, error) {
 func createQueue(queueName *string, policy *string) (*string, error) {
 	attributes := map[string]*string{
 		"MessageRetentionPeriod":    aws.String("60"), // 60 seconds // TODO: should be configurable
-		"FifoQueue":                 aws.String("true"),
-		"ContentBasedDeduplication": aws.String("true"), // TODO: not sure if we want this to be configurable
+	}
+	if config.GetQueueType() == QueueTypeFifo {
+		attributes["FifoQueue"] = aws.String("true")
+		attributes["ContentBasedDeduplication"] = aws.String("true")  // TODO: not sure if we want this to be configurable
 	}
 	if policy != nil {
 		attributes["Policy"] = policy

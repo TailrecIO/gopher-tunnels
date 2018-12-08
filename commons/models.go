@@ -2,14 +2,14 @@ package commons
 
 import (
 	"encoding/hex"
-	"fmt"
-	"github.com/rs/xid"
-	"github.com/tailrecio/gopher-tunnels/config"
 )
 
 const (
 	ModeSync  = "sync"
 	ModeAsync = "async"
+
+	QueueTypeFifo = "fifo"
+	QueueTypeStandard = "standard"
 )
 
 func decodeKey(encodedKey string) *[32]byte {
@@ -92,11 +92,6 @@ type Gopher struct {
 	EncodedPublicKey *string `json:"encoded_public_key"` // Hex encoded Client's public key
 	Mode             string  `json:"mode"`               // sync or async
 	RequestQueueName *string `json:"req_queue_name"`     // a request queue name generated from UUID
-}
-
-func MakeQueueName(dir string) string {
-	guid := xid.New()
-	return fmt.Sprintf("gopher_%v_%v_%v.fifo", config.GetStage(), guid.String(), dir)
 }
 
 func (g *Gopher) GetPublicKey() *[32]byte {

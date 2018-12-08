@@ -1,4 +1,8 @@
 
+# Don't use variables in here since it won't get resolved by the client
+
+# You can have more than one stage name.
+# `dev` stage will be picked up by default if you don't provide --stage argument in the command line
 dev:
 
   ##### Common Configuration ####
@@ -10,10 +14,11 @@ dev:
   # DYNAMO_DB_TABLE
   dynamoDbTable: "gopher_tunnels"
   # SQS Queue Type: fifo, standard
-  queueType: "fifo"
+  queueType: "standard"
 
   ##### Client Configuration #####
   # This can be either API Gateway endpoint or the custom domain that you have associated with API Gateway
+  # Example: https://57bqpzkt75.execute-api.us-west-2.amazonaws.com/dev
   baseApiEndpoint: ""
   # If you want to hide the account ID and region from the client, you can put the queue endpoint in DNS CNAME
   baseQueueEndpoint: ""
