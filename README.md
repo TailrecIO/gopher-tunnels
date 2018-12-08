@@ -2,12 +2,12 @@
 # Gopher Tunnels
 A local tunnel built ~~with~~by Gopher.
 
-If ngrok is blocked in your network, this one is an alternative that you can deploy 
-to your own AWS account in a few steps.
-This application runs on serverelss 100%. I mean all servers will be managed by Amazon 100%.
-You may pay very little if there is no traffic coming to your service. (Amazon may charge for configuration).
+If ngrok is blocked in your network, this is an alternative one that you can deploy to your own AWS account in a few steps.
+This application runs on serverelss. I mean all servers will be managed by Amazon 100%.
+You pay nothing if there is no traffic coming to your service. However, Amazon may charge for configurations.
 
-This project uses [serverless framework](https://serverless.com/framework/docs/providers/aws/guide/). So, make sure that you're familiar with that a bit before get going. 
+This project uses [serverless framework](https://serverless.com/framework/docs/providers/aws/guide/). 
+So, make sure that you're familiar with that framework a bit before giving it a go. 
 
 ## Requirements
 - [Go](https://golang.org/doc/install)
@@ -16,7 +16,7 @@ This project uses [serverless framework](https://serverless.com/framework/docs/p
 - [Severless](https://serverless.com/framework/docs/providers/aws/guide/installation/)
 
 ### You may want to install this library to your $GOPATH
-This is optional and these library can be installed locally to vendor directory.
+This is optional and these libraries can be installed to vendor directory locally.
 - go get -u github.com/aws/aws-sdk-go
 - go get -u github.com/pkg/errors
 - go get -u github.com/rs/xid
@@ -37,15 +37,15 @@ Binary path: `bin/client`
 
 ### Tools
 Binary path: `bin/tools`
-- **config** - this tool will generate a client configuration file from application.yml.
-- **echo_server** - this tool is really useful (not just for this service).   
+- **config** - this tool will generate a client configuration file from `application.yml`.
+- **echo_server** - this tool is really useful for debugging an HTTP call.   
   It is an http server that returns exactly what it receives like an echo service.
-  The nice part of this tool is that it echo everything to the console. So, you can inspect 
-  the HTTP request such as path, method, headers, and body. 
+  The nice part of this tool is that it dumps the request to the console as well. So, you can inspect 
+  the HTTP request such as path, method, headers, and body.
 
 # How to configure the project
 
-Please copy application.template.yml to application.yml
+Please copy `application.template.yml` to `application.yml`
 Edit that file to make sure that all attributes are correct.
 Note that you don't know `baseApiEndpoint` until you deploy the API it to API Gateway.
 This attribute can be left empty when you deploy your serverless because it's required by 
@@ -76,7 +76,7 @@ You can deploy individual function by providing the function name
 Assume that your current directory is at the project root. Otherwise, you will get an error.  
 If you want to create a client for the default stage (dev), you simply run `./dist.sh`.  
 `dist.sh` will create the dist directory, generate a client configuration from your application.yml, and
-copy all related binary files. You can just zip this directory and distribute it.
+copy all related binary files and drop them there. You can just zip this directory and distribute it.
 
 However, you can specify the stage name by providing the stage name as the first argument.
 I'm a bash script noob and I don't care to improve it. So, contribution is very welcome :)
